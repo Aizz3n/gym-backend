@@ -38,7 +38,7 @@ public class UserModel implements Serializable {
     @Column(nullable = false)
     private String lastName;
 
-    @Email
+    @Email(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
     @NotBlank
     @Column(nullable = false,unique = true)
     private String email;
@@ -47,6 +47,13 @@ public class UserModel implements Serializable {
     @Size(min = 8)
     @Column(nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
+    @Column(nullable = false)
+    private Boolean deleted = false;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
