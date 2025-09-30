@@ -3,12 +3,15 @@ package com.gym_system.backend.Components.UserComponent.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,6 +24,8 @@ import java.util.UUID;
 @Builder
 @EqualsAndHashCode(of = "id")
 @Table(name = "users")
+@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id = ?")
+@Where(clause =  "deleted = false")
 @EntityListeners(AuditingEntityListener.class)
 public class UserModel implements Serializable {
     @Serial
@@ -30,26 +35,28 @@ public class UserModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotBlank
+    @NotBlank(message = "Name is Required")
+    @Size(min = 2, max = 50)
     @Column(nullable = false)
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "Last name is Required")
+    @Size(min = 2, max = 50)
     @Column(nullable = false)
     private String lastName;
 
-    @Email(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
-    @NotBlank
+    @Email(message = "Invalid email")
+    @NotBlank(message = "Email is required")
     @Column(nullable = false,unique = true)
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Password is Required")
     @Size(min = 8)
     @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'USER'")
     private Role role = Role.USER;
 
     @Column(nullable = false)
@@ -57,9 +64,9 @@ public class UserModel implements Serializable {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdDate;
+    private Instant createdDate;
 
     @LastModifiedDate
     @Column(nullable = false)
-    private LocalDateTime lastModified;
+    private Instant lastModified;
 }
