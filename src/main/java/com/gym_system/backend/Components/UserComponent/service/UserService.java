@@ -34,15 +34,34 @@ public class UserService {
             throw new ConstraintViolationException(violations);
         }
 
-        if (userRepository.existsByEmailAndDeletedFalse(userModel.getEmail())) {
+        if (userModel.getEmail() == null || userModel.getEmail().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
+        }
+        String normalizedEmail = userModel.getEmail().trim().toLowerCase();
+
+        if (userRepository.existsByEmailAndDeletedFalse(normalizedEmail)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
+        }
+        userModel.setEmail(normalizedEmail);
+
+        if (userModel.getRole() == null) {
+            userModel.setRole(Role.USER);
+        }
+
+        if (userModel.getRole() == Role.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot create ADMIN via this endpoint");
+        }
+
+        if (userModel.getPassword() == null || userModel.getPassword().length() < 6) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password must be at least 6 characters");
         }
 
         userModel.setPassword(bCryptPasswordEncoder.encode(userModel.getPassword()));
-        UserModel savedUser = userRepository.save(userModel);
-        log.info("User  created with id: {}", savedUser .getId());
+        UserModel savedUser  = userRepository.save(userModel);
+        log.info("User  created with id: {}, email: {}", savedUser .getId(), savedUser .getEmail());
         return savedUser ;
     }
+
 
     @Transactional(readOnly = true)
     public List<UserModel> getAllUsers() {
