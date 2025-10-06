@@ -6,19 +6,23 @@ public enum Role {
     USER,
     ADMIN;
 
-    public static Role fromString(String role){
-        if(role == null){
-            throw new IllegalArgumentException("Role cannot be null");
+    public static Role fromString(String role) {
+        if (role == null || role.trim().isBlank()) {
+            throw new IllegalArgumentException("Role cannot be null or blank");
         }
 
         try {
-            return Role.valueOf(role.trim().toLowerCase(Locale.ROOT));
+            return Role.valueOf(role.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid Role: " + role);
+            throw new IllegalArgumentException("Invalid or unsupported role: " + role);
         }
     }
 
-    public boolean hasAdminRole(){
+    public boolean is(Role other) {
+        return this == other;
+    }
+
+    public boolean isAdmin() {
         return this == ADMIN;
     }
 }

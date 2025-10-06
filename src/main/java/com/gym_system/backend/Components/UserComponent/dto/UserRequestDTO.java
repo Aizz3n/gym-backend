@@ -4,28 +4,23 @@ import com.gym_system.backend.Components.UserComponent.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-@NotBlank
-@AllArgsConstructor
 @Builder
 public class UserRequestDTO {
-
-    @NotBlank(message = "Name is Required")
+    @NotBlank(message = "Name is required")
     private String name;
 
-    @NotBlank(message = "Last name is Required")
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
-    @Email(message = "Invalid email")
+    @Email(message = "Email must be valid")
     @NotBlank(message = "Email is required")
     private String email;
 
-    @NotBlank(message = "Password is Required")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
     private Role role;

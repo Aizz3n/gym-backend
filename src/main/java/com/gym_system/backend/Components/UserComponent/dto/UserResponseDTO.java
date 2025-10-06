@@ -18,7 +18,10 @@ public class UserResponseDTO {
     private String name;
     private String lastName;
     private String email;
-    private Role role;
+
+    @Builder.Default
+    private Role role = Role.USER;
+
     private LocalDateTime createdDate;
     private LocalDateTime lastModified;
 }
